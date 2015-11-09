@@ -1,0 +1,8 @@
+<App Theme="Basic">
+	<JavaScript>
+	</JavaScript>
+	<Panel>
+		<ModalUX Text="This is a modal dialog" />
+	</Panel>
+</App>
+
