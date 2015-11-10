@@ -1,8 +1,14 @@
 <App Theme="Basic">
 	<JavaScript>
 	</JavaScript>
-	<Panel>
-		<ModalUX Text="This is a modal dialog" />
-	</Panel>
+	<StackPanel ux:Name="stackpanel">
+		<Panel>
+			<ModalUX Text="This is a modal dialog">
+				<Text Value="This is a modal dialog" />
+			</ModalUX>
+		</Panel>
+		<Button Text="A button" />
+		<Text Value="Arne" />
+	</StackPanel>
 </App>
 

@@ -1,7 +1,8 @@
 using Uno;
 using Uno.Collections;
 using Fuse;
-public class ModalUX : Node
+using Fuse.Controls;
+public class ModalUX : Panel
 {
 	public string Text {
 		get; set;
@@ -12,9 +13,9 @@ public class ModalUX : Node
 
 	protected override void OnRooted()
 	{
-	        base.OnRooted();
+	        // base.OnRooted();
 	        if (!shown) {
-	        	m = new Modal();
+	        	m = new Modal(this);
 	        	m.ShowDialog(Text);
 	        	shown = true;	        	
 	        }
