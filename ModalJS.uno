@@ -12,7 +12,7 @@ public class ModalJS : NativeModule
 
 	Panel myPanel;
 	Panel parent;
-	Panel UXModal(string title, string text) {
+	Panel UXModal(string title, string text, Fuse.Scripting.Array buttons) {
 		var p = new Fuse.Controls.Panel();
 		var temp = new Fuse.Controls.DockPanel();
 		var temp1 = new Fuse.Controls.StackPanel();
@@ -23,8 +23,6 @@ public class ModalJS : NativeModule
 		var temp6 = new Fuse.Controls.ScrollView();
 		var temp7 = new Fuse.Controls.Text();
 		var temp8 = new Fuse.Controls.Grid();
-		var temp9 = new Fuse.Controls.Button();
-		var temp10 = new Fuse.Controls.Button();
 		var temp11 = new Fuse.Drawing.StaticSolidColor(float4(1f, 1f, 1f, 1f));
 		var temp12 = new Fuse.Controls.Rectangle();
 		var temp13 = new Fuse.Drawing.StaticSolidColor(float4(0f, 0f, 0f, 0.6666667f));
@@ -51,28 +49,73 @@ public class ModalJS : NativeModule
 		temp7.TextAlignment = Fuse.Elements.TextAlignment.Center;
 		temp7.TextColor = float4(0.09019608f, 0.08627451f, 0.08627451f, 1f);
 		temp7.Margin = float4(20f, 20f, 20f, 20f);
-		temp8.ColumnCount = 2;
+		temp8.ColumnCount = buttons.Length;
 		temp8.Margin = float4(0f, 0f, 0f, 0f);
 		global::Fuse.Controls.DockPanel.SetDock(temp8, Fuse.Layouts.Dock.Bottom);
-		temp8.Children.Add(temp9);
-		temp8.Children.Add(temp10);
-		temp9.Text = "B1";
-		temp10.Text = "B2";
+
+		for (var i = 0; i < buttons.Length; i++) {
+			var tempButton = new Fuse.Controls.Button();
+			temp8.Children.Add(tempButton);
+			tempButton.Text = buttons[i] as string;
+			Fuse.Gestures.Clicked.AddHandler(tempButton, ButtonClickHandler);
+		}
+
 		temp12.Background = temp13;
 		p.Children.Add(temp);
 		p.Children.Add(temp12);
+		p.HitTestMode = Fuse.Elements.HitTestMode.LocalBoundsAndChildren;
 		return p;
 	}
 
+	void ButtonClickHandler (object sender, Fuse.Gestures.ClickedArgs args) {
+		var button = args.Node as Button;
+		UpdateManager.PostAction(RemoveModal);
+		Context.Dispatcher.Invoke(new InvokeEnclosure(callback, button.Text).InvokeCallback);
+	}
+
+	class InvokeEnclosure {
+		public InvokeEnclosure (Fuse.Scripting.Function func, string cbtext) {
+			callback = func;
+			callback_text = cbtext;
+		}
+		Fuse.Scripting.Function callback;
+		string callback_text;
+		public void InvokeCallback () {
+			callback.Call(callback_text);
+		}
+	}
+
+
+	List<Node> ChildrenBackup;
 	void AddModal() {
-		debug_log "ADDING!! " + myPanel +  " to " + parent;
+		var c = parent.Children;
+		ChildrenBackup = new List<Node>();
+		for (int i=0; i< parent.Children.Count; i++) {
+			ChildrenBackup.Add(c[i]);
+		}
+		parent.Children.Clear();
 		parent.Children.Add(myPanel);
 	}
 
+	void RemoveModal() {
+		parent.Children.Clear();
+		for (int i=0; i< ChildrenBackup.Count; i++) {
+			parent.Children.Add(ChildrenBackup[i]);
+		}
+
+	}
+
+	Context Context;
+	Fuse.Scripting.Function callback;
+
 	object ShowModal (Context c, object[] args) {
-		debug_log "ShowModal";
 		parent = FindPanel(AppBase.Current.RootNode);
-		myPanel = UXModal("Tittel", "Tekst");
+		var title = args[0] as string;
+		var body = args[1] as string;
+		var array = args[2] as Fuse.Scripting.Array;
+		callback = args[3] as Fuse.Scripting.Function;
+		Context = c;
+		myPanel = UXModal(title, body, array);
 		UpdateManager.PostAction(AddModal);
 		return null;
 	}
