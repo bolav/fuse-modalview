@@ -15,6 +15,7 @@
         "Fuse.Shapes",
         "Fuse.Triggers",
         "Fuse.Reactive",
+        "Fuse.Scripting",
         "Fuse.Android",
         "Fuse.Desktop",
         "Fuse.iOS",

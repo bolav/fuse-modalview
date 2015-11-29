@@ -1,13 +1,15 @@
 <App Theme="Basic">
+	<ModalJS ux:Global="Modal" />
 	<JavaScript>
+		var Modal = require('Modal');
+		function click () {
+			Modal.showModal();
+		}
+
+		module.exports.click = click;
 	</JavaScript>
 	<StackPanel ux:Name="stackpanel">
-		<Panel>
-			<ModalUX Text="This is a modal dialog">
-				<Text Value="This is a modal dialog" />
-			</ModalUX>
-		</Panel>
-		<Button Text="A button" />
+		<Button Text="A button" Clicked="{click}" />
 		<Text Value="Arne" />
 	</StackPanel>
 </App>
