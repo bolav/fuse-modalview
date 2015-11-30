@@ -72,6 +72,7 @@ public class ModalJS : NativeModule
 
 	void ButtonClickHandler (object sender, Fuse.Gestures.ClickedArgs args) {
 		var button = args.Node as Button;
+		running = false;
 		UpdateManager.PostAction(RemoveModal);
 		Context.Dispatcher.Invoke(new InvokeEnclosure(callback, button.Text).InvokeCallback);
 	}
@@ -107,9 +108,22 @@ public class ModalJS : NativeModule
 
 	}
 
+	extern(iOS)
+	void iOSClickHandler (int id) {
+		// running = false;
+		// var s = buttons[id] as string;
+		debug_log(id);
+		//.stringByAppendingString("");
+		//debug_log(s);
+		// Context.Dispatcher.Invoke(new InvokeEnclosure(callback, s).InvokeCallback);
+	}
+
 	Context Context;
 	Fuse.Scripting.Function callback;
+	bool running = false;
 	Fuse.Scripting.Array buttons;
+	string title;
+	string body;
 
 	[TargetSpecificImplementation]
 	extern(iOS)
@@ -117,26 +131,19 @@ public class ModalJS : NativeModule
 
 	extern(iOS)
 	public void ShowModaliOS() {
-		debug_log "iOS!";
+		if (title == "HACKETIHACK") {
+			iOSClickHandler(-1);
+		}
 		var alert = iOS.UIKit.UIAlertController._alertControllerWithTitleMessagePreferredStyle(
-			"My alert",
-			"This is an alert",
+			title,
+			body,
 			iOS.UIKit.UIAlertControllerStyle.UIAlertControllerStyleAlert
 		);
 
 		var s_buttons = new string[buttons.Length];
 		for (var i = 0; i < buttons.Length; i++) {
 			s_buttons[i] = buttons[i] as string;
-			debug_log buttons[i] as string;
-			var s = buttons[i] as string;
-			debug_log s;
 		}
-
-		var n_alert = iOS.UIKit.UIAlertController._alertControllerWithTitleMessagePreferredStyle(
-			s_buttons[0],
-			"This is an alert",
-			iOS.UIKit.UIAlertControllerStyle.UIAlertControllerStyleAlert
-		);
 
 		// var alert_uivc = new iOS.UIKit.UIAlertController(alert);
 		//var action = new iOS.UIKit.UIAlertAction();
@@ -147,18 +154,30 @@ public class ModalJS : NativeModule
 		// uivc.presentModalViewControllerAnimated(alert_uivc, false);
 	}
 
+	extern(Android)
+	public void ShowModalAndroid() {
+		
+	}
+
 	object ShowModal (Context c, object[] args) {
+		if (running) return null;
+		running = true;
+		title = args[0] as string;
+		body = args[1] as string;
+		buttons = args[2] as Fuse.Scripting.Array;
+		callback = args[3] as Fuse.Scripting.Function;
+		Context = c;
+
+		Uno.Diagnostics.Debug.Alert(body);
 		if defined(iOS) {
 			UpdateManager.PostAction(ShowModaliOS);
 			return null;
 		}
+		else if defined(Android) {
+			UpdateManager.PostAction(ShowModalAndroid);
+		}
 		else {
 			parent = FindPanel(AppBase.Current.RootNode);
-			var title = args[0] as string;
-			var body = args[1] as string;
-			buttons = args[2] as Fuse.Scripting.Array;
-			callback = args[3] as Fuse.Scripting.Function;
-			Context = c;
 			myPanel = UXModal(title, body, buttons);
 			UpdateManager.PostAction(AddModal);
 			return null;

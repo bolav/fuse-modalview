@@ -5,15 +5,21 @@
            <Method Signature="ShowImpl(iOS.UIKit.UIViewController,ObjC.ID,string[])">
                <Body>
                    <![CDATA[
-                   UIAlertAction* ok = [UIAlertAction
-                                        actionWithTitle:@"OK"
-                                        style:UIAlertActionStyleDefault
-                                        handler:^(UIAlertAction * action)
-                                        {
-                                            [$1 dismissViewControllerAnimated:YES completion:nil];
-                                            
-                                        }];
-                   [$1 addAction:ok];
+
+                   for (int i = 0; i < $2->Length(); i++)
+                   {
+                   		NSString *b_text = uObjC::NativeString(buttons_->Item< ::uString*>(i));
+                   		UIAlertAction* aa = [UIAlertAction
+                   		                     actionWithTitle:b_text
+                   		                     style:UIAlertActionStyleDefault
+                   		                     handler:^(UIAlertAction * action)
+                   		                     {
+	                   		                     $$->iOSClickHandler(i);
+                   		                         [$1 dismissViewControllerAnimated:YES completion:nil];
+                   		                     }];
+                   		[$1 addAction:aa];
+                   }
+
                    [$0->Handle() presentViewController:$1 animated:NO completion:nil];
                    ]]>
                </Body>
