@@ -25,7 +25,8 @@ public class Modal
 				"This is an alert",
 				iOS.UIKit.UIAlertControllerStyle.UIAlertControllerStyleAlert
 			);
-			extern "presentViewController(alert, true, null);";
+			// UIApplication._sharedApplication().Delegate.Window.RootViewController.presentViewController(alert,true,null);
+			// extern "presentViewController(alert, true, null);";
 		}
 		else if defined(Android) {
 			debug_log "Android";

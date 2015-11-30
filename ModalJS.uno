@@ -4,6 +4,9 @@ using Fuse;
 using Fuse.Reactive;
 using Fuse.Scripting;
 using Fuse.Controls;
+using Uno.Compiler.ExportTargetInterop;
+
+[TargetSpecificImplementation]
 public class ModalJS : NativeModule
 {
 	public ModalJS () {
@@ -85,7 +88,6 @@ public class ModalJS : NativeModule
 		}
 	}
 
-
 	List<Node> ChildrenBackup;
 	void AddModal() {
 		var c = parent.Children;
@@ -108,25 +110,52 @@ public class ModalJS : NativeModule
 	Context Context;
 	Fuse.Scripting.Function callback;
 
+	[TargetSpecificImplementation]
+	extern(iOS)
+	public void ShowImpl(iOS.UIKit.UIViewController controller, ObjC.ID alert);
+
+	extern(iOS)
+	public void ShowModaliOS() {
+		debug_log "iOS!";
+		var alert = iOS.UIKit.UIAlertController._alertControllerWithTitleMessagePreferredStyle(
+			"My alert",
+			"This is an alert",
+			iOS.UIKit.UIAlertControllerStyle.UIAlertControllerStyleAlert
+		);
+		var uivc = iOS.UIKit.UIApplication._sharedApplication().Delegate.Window.RootViewController;
+		ShowImpl(uivc, alert);
+		// extern "uObjC_SEND_MESSAGE(true, void, );";
+		// extern "presentViewController(alert, true, null);";
+	}
+
 	object ShowModal (Context c, object[] args) {
-		parent = FindPanel(AppBase.Current.RootNode);
-		var title = args[0] as string;
-		var body = args[1] as string;
-		var array = args[2] as Fuse.Scripting.Array;
-		callback = args[3] as Fuse.Scripting.Function;
-		Context = c;
-		myPanel = UXModal(title, body, array);
-		UpdateManager.PostAction(AddModal);
-		return null;
+		if defined(iOS) {
+			UpdateManager.PostAction(ShowModaliOS);
+			return null;
+		}
+		else {
+			parent = FindPanel(AppBase.Current.RootNode);
+			var title = args[0] as string;
+			var body = args[1] as string;
+			var array = args[2] as Fuse.Scripting.Array;
+			callback = args[3] as Fuse.Scripting.Function;
+			Context = c;
+			myPanel = UXModal(title, body, array);
+			UpdateManager.PostAction(AddModal);
+			return null;
+		}
+
 	}
 
 	Panel FindPanel (Node n) {
 		debug_log "FindPanel " + n;
-		if (n is Outracks.Simulator.FakeApp) {
-			var a = n as Outracks.Simulator.FakeApp;
-			var c = a.Children[1];
-			debug_log a.Children.Count;
-			return FindPanel(c);
+		if defined(CIL) {
+			if (n is Outracks.Simulator.FakeApp) {
+				var a = n as Outracks.Simulator.FakeApp;
+				var c = a.Children[1];
+				debug_log a.Children.Count;
+				return FindPanel(c);
+			}
 		}
 		if (n is Fuse.Controls.Panel) {
 			var p = n as Fuse.Controls.Panel;

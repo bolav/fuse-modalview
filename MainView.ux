@@ -6,7 +6,7 @@
 			Modal.showModal(
 				"Tittel",
 				"Dette er jo brødteksten som bare dette.",
-				["Ok", "Cancle"],
+				["Ok", "Cancel"],
 				function (s) {
 					debug_log("Got callback with " + s);
 				});
