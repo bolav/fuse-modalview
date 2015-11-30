@@ -19,12 +19,13 @@ public class Modal
 	public void ShowDialog (string dialog) {
 		debug_log "Showing Dialog: " + dialog;
 		if defined(iOS) {
+			/*
 			debug_log "iOS!";
 			var alert = iOS.UIKit.UIAlertController._alertControllerWithTitleMessagePreferredStyle(
 				"My alert",
 				"This is an alert",
 				iOS.UIKit.UIAlertControllerStyle.UIAlertControllerStyleAlert
-			);
+			);*/
 			// UIApplication._sharedApplication().Delegate.Window.RootViewController.presentViewController(alert,true,null);
 			// extern "presentViewController(alert, true, null);";
 		}

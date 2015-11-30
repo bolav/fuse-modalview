@@ -1,16 +1,25 @@
 <Package>
 <Extensions Backend="CPlusPlus" Condition="iOS">
-	<Type Name="ModalJS">
-		<Set Source.FileExtension="mm" />
-	    <Method Signature="ShowImpl(iOS.UIKit.UIViewController,ObjC.ID)">
-	        <Body>
-	            <![CDATA[
-	            [$0->Handle() presentViewController:$1 animated:NO completion:nil];
-	            ]]>
-	        </Body>
-	    </Method>
+       <Type Name="ModalJS">
+               <Set Source.FileExtension="mm" />
+           <Method Signature="ShowImpl(iOS.UIKit.UIViewController,ObjC.ID,string[])">
+               <Body>
+                   <![CDATA[
+                   UIAlertAction* ok = [UIAlertAction
+                                        actionWithTitle:@"OK"
+                                        style:UIAlertActionStyleDefault
+                                        handler:^(UIAlertAction * action)
+                                        {
+                                            [$1 dismissViewControllerAnimated:YES completion:nil];
+                                            
+                                        }];
+                   [$1 addAction:ok];
+                   [$0->Handle() presentViewController:$1 animated:NO completion:nil];
+                   ]]>
+               </Body>
+           </Method>
 
-	</Type>
+       </Type>
 
 </Extensions>
 </Package>

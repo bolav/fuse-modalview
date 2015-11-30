@@ -109,10 +109,11 @@ public class ModalJS : NativeModule
 
 	Context Context;
 	Fuse.Scripting.Function callback;
+	Fuse.Scripting.Array buttons;
 
 	[TargetSpecificImplementation]
 	extern(iOS)
-	public void ShowImpl(iOS.UIKit.UIViewController controller, ObjC.ID alert);
+	public void ShowImpl(iOS.UIKit.UIViewController controller, ObjC.ID alert, string[] buttons);
 
 	extern(iOS)
 	public void ShowModaliOS() {
@@ -122,10 +123,28 @@ public class ModalJS : NativeModule
 			"This is an alert",
 			iOS.UIKit.UIAlertControllerStyle.UIAlertControllerStyleAlert
 		);
-		var uivc = iOS.UIKit.UIApplication._sharedApplication().Delegate.Window.RootViewController;
-		ShowImpl(uivc, alert);
-		// extern "uObjC_SEND_MESSAGE(true, void, );";
-		// extern "presentViewController(alert, true, null);";
+
+		var s_buttons = new string[buttons.Length];
+		for (var i = 0; i < buttons.Length; i++) {
+			s_buttons[i] = buttons[i] as string;
+			debug_log buttons[i] as string;
+			var s = buttons[i] as string;
+			debug_log s;
+		}
+
+		var n_alert = iOS.UIKit.UIAlertController._alertControllerWithTitleMessagePreferredStyle(
+			s_buttons[0],
+			"This is an alert",
+			iOS.UIKit.UIAlertControllerStyle.UIAlertControllerStyleAlert
+		);
+
+		// var alert_uivc = new iOS.UIKit.UIAlertController(alert);
+		//var action = new iOS.UIKit.UIAlertAction();
+		// action.Title = "OK";
+
+		var uivc = iOS.UIKit.UIApplication._sharedApplication().KeyWindow.RootViewController;
+		ShowImpl(uivc, alert, s_buttons);
+		// uivc.presentModalViewControllerAnimated(alert_uivc, false);
 	}
 
 	object ShowModal (Context c, object[] args) {
@@ -137,10 +156,10 @@ public class ModalJS : NativeModule
 			parent = FindPanel(AppBase.Current.RootNode);
 			var title = args[0] as string;
 			var body = args[1] as string;
-			var array = args[2] as Fuse.Scripting.Array;
+			buttons = args[2] as Fuse.Scripting.Array;
 			callback = args[3] as Fuse.Scripting.Function;
 			Context = c;
-			myPanel = UXModal(title, body, array);
+			myPanel = UXModal(title, body, buttons);
 			UpdateManager.PostAction(AddModal);
 			return null;
 		}
