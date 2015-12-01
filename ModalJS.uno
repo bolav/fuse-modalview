@@ -5,6 +5,7 @@ using Fuse.Reactive;
 using Fuse.Scripting;
 using Fuse.Controls;
 using Uno.Compiler.ExportTargetInterop;
+using Android.android.app;
 
 [TargetSpecificImplementation]
 public class ModalJS : NativeModule
@@ -73,7 +74,7 @@ public class ModalJS : NativeModule
 	void ButtonClickHandler (object sender, Fuse.Gestures.ClickedArgs args) {
 		var button = args.Node as Button;
 		running = false;
-		UpdateManager.PostAction(RemoveModal);
+		UpdateManager.PostAction(RemoveModalUX);
 		Context.Dispatcher.Invoke(new InvokeEnclosure(callback, button.Text).InvokeCallback);
 	}
 
@@ -90,7 +91,7 @@ public class ModalJS : NativeModule
 	}
 
 	List<Node> ChildrenBackup;
-	void AddModal() {
+	void AddModalUX() {
 		var c = parent.Children;
 		ChildrenBackup = new List<Node>();
 		for (int i=0; i< parent.Children.Count; i++) {
@@ -100,7 +101,7 @@ public class ModalJS : NativeModule
 		parent.Children.Add(myPanel);
 	}
 
-	void RemoveModal() {
+	void RemoveModalUX() {
 		parent.Children.Clear();
 		for (int i=0; i< ChildrenBackup.Count; i++) {
 			parent.Children.Add(ChildrenBackup[i]);
@@ -110,12 +111,9 @@ public class ModalJS : NativeModule
 
 	extern(iOS)
 	void iOSClickHandler (int id) {
-		// running = false;
-		// var s = buttons[id] as string;
-		debug_log(id);
-		//.stringByAppendingString("");
-		//debug_log(s);
-		// Context.Dispatcher.Invoke(new InvokeEnclosure(callback, s).InvokeCallback);
+		running = false;
+		var s = buttons[id] as string;
+		Context.Dispatcher.Invoke(new InvokeEnclosure(callback, s).InvokeCallback);
 	}
 
 	Context Context;
@@ -156,7 +154,16 @@ public class ModalJS : NativeModule
 
 	extern(Android)
 	public void ShowModalAndroid() {
-		
+		var alert = new AlertDialogDLRBuilder(null);
+		Android.java.lang.String a_title = title;
+		alert.setTitle(a_title);
+		Android.java.lang.String a_body = body;
+		alert.setMessage(a_body);
+		for (var i = 0; i < buttons.Length; i++) {
+			Android.java.lang.String a_but = buttons[i] as string;
+			alert.setNeutralButton(a_but, null);
+		}
+		alert.show();
 	}
 
 	object ShowModal (Context c, object[] args) {
@@ -175,11 +182,12 @@ public class ModalJS : NativeModule
 		}
 		else if defined(Android) {
 			UpdateManager.PostAction(ShowModalAndroid);
+			return null;
 		}
 		else {
 			parent = FindPanel(AppBase.Current.RootNode);
 			myPanel = UXModal(title, body, buttons);
-			UpdateManager.PostAction(AddModal);
+			UpdateManager.PostAction(AddModalUX);
 			return null;
 		}
 

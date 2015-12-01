@@ -14,9 +14,12 @@
 
 		module.exports.click = click;
 	</JavaScript>
-	<StackPanel ux:Name="stackpanel">
-		<Button Text="A button" Clicked="{click}" />
-		<Text Value="Arne" />
-	</StackPanel>
+	<DockPanel>
+		<StatusBarBackground DockPanel.Dock="Top" />
+		<StackPanel ux:Name="stackpanel">
+			<Button Text="A button" Clicked="{click}" />
+			<Text Value="Dette er litt tekst." />
+		</StackPanel>
+	</DockPanel>
 </App>
 

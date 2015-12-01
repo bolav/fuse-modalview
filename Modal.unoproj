@@ -23,7 +23,8 @@
         "Uno.Collections",
         "Uno.Geometry",
         "Experimental.iOS",
-        "ObjC"
+        "ObjC",
+        "Android"
   ],
   "Includes": [
     "*"

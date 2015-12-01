@@ -2,9 +2,13 @@
 <Extensions Backend="CPlusPlus" Condition="iOS">
        <Type Name="ModalJS">
                <Set Source.FileExtension="mm" />
-           <Method Signature="ShowImpl(iOS.UIKit.UIViewController,ObjC.ID,string[])">
+               <Require Source.Include="uObjC.Reference.h" />
+
+          <Method Signature="ShowImpl(iOS.UIKit.UIViewController,ObjC.ID,string[])">
                <Body>
                    <![CDATA[
+                   // Need to save the variables we need in the callback
+                   Uno_StrongReference *objcCallback = [[Uno_StrongReference alloc] initWithUnoObject:$$];
 
                    for (int i = 0; i < $2->Length(); i++)
                    {
@@ -14,8 +18,12 @@
                    		                     style:UIAlertActionStyleDefault
                    		                     handler:^(UIAlertAction * action)
                    		                     {
-	                   		                     $$->iOSClickHandler(i);
-                   		                         [$1 dismissViewControllerAnimated:YES completion:nil];
+                                              // Need a pool, since we are running on a different thread
+                                              uAutoReleasePool pool;
+                                              // Unwrap
+                                              @{ModalJS} myThis = (@{ModalJS}) [objcCallback unoObject];
+	                   		                      myThis->iOSClickHandler(i);
+                   		                        [$1 dismissViewControllerAnimated:YES completion:nil];
                    		                     }];
                    		[$1 addAction:aa];
                    }
