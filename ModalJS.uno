@@ -116,6 +116,12 @@ public class ModalJS : NativeModule
 		Context.Dispatcher.Invoke(new InvokeEnclosure(callback, s).InvokeCallback);
 	}
 
+	extern(Android)
+	void AndroidClickHandler (string s) {
+		running = false;
+		Context.Dispatcher.Invoke(new InvokeEnclosure(callback, s).InvokeCallback);
+	}
+
 	Context Context;
 	Fuse.Scripting.Function callback;
 	bool running = false;
@@ -154,23 +160,27 @@ public class ModalJS : NativeModule
 
 	extern(Android)
 	public void ShowModalAndroid() {
-		var alert = new AlertDialogDLRBuilder(null);
+		// Might want to throw error if more than 3 buttons
+		var ctx = Android.android.app.Activity.GetAppActivity();
+		var alert = new AlertDialogDLRBuilder(ctx);
 		Android.java.lang.String a_title = title;
 		alert.setTitle(a_title);
+		alert.setCancelable(false);
 		Android.java.lang.String a_body = body;
 		alert.setMessage(a_body);
+
 		for (var i = 0; i < buttons.Length; i++) {
-			Android.java.lang.String a_but = buttons[i] as string;
-			var callback = new AndroidListener();
-			debug_log "callback " + callback + "("+ buttons[i] +")";
+			var s = buttons[i] as string;
+			Android.java.lang.String a_but = s;
+			var clickhandler = new AndroidListener(s, AndroidClickHandler);
 			if (i == 0) {
-				alert.setPositiveButton(a_but, callback);
+				alert.setNegativeButton(a_but, clickhandler);
 			}
-			else if (i == 1) {
-				alert.setNeutralButton(a_but, callback);
+			else if ((i == 1)&&(buttons.Length>2)) {
+				alert.setNeutralButton(a_but, clickhandler);
 			}
 			else {
-				alert.setNegativeButton(a_but, callback);
+				alert.setPositiveButton(a_but, clickhandler);
 			}
 		}
 		alert.show();
