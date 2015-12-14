@@ -161,7 +161,17 @@ public class ModalJS : NativeModule
 		alert.setMessage(a_body);
 		for (var i = 0; i < buttons.Length; i++) {
 			Android.java.lang.String a_but = buttons[i] as string;
-			alert.setNeutralButton(a_but, null);
+			var callback = new AndroidListener();
+			debug_log "callback " + callback + "("+ buttons[i] +")";
+			if (i == 0) {
+				alert.setPositiveButton(a_but, callback);
+			}
+			else if (i == 1) {
+				alert.setNeutralButton(a_but, callback);
+			}
+			else {
+				alert.setNegativeButton(a_but, callback);
+			}
 		}
 		alert.show();
 	}
