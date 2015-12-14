@@ -154,14 +154,24 @@ public class ModalJS : NativeModule
 
 	extern(Android)
 	public void ShowModalAndroid() {
-		var alert = new AlertDialogDLRBuilder(null);
+		var ctx = Android.android.app.Activity.GetAppActivity();
+		var alert = new AlertDialogDLRBuilder(ctx);
 		Android.java.lang.String a_title = title;
 		alert.setTitle(a_title);
 		Android.java.lang.String a_body = body;
 		alert.setMessage(a_body);
 		for (var i = 0; i < buttons.Length; i++) {
+			debug_log "Adding " + buttons[i];
 			Android.java.lang.String a_but = buttons[i] as string;
-			alert.setNeutralButton(a_but, null);
+			if (i == 0) {
+				alert.setPositiveButton(a_but, null);
+			}
+			else if (i == 1) {
+				alert.setNeutralButton(a_but, null);
+			}
+			else {
+				alert.setNegativeButton(a_but, null);
+			}
 		}
 		alert.show();
 	}
