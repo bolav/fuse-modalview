@@ -1,7 +1,7 @@
 <Package>
 <Extensions Backend="CPlusPlus" Condition="iOS">
        <Type Name="ModalJS">
-               <Set Source.FileExtension="mm" />
+               <Set FileExtension="mm" />
                <Require Source.Include="uObjC.Reference.h" />
 
           <Method Signature="ShowImpl(iOS.UIKit.UIViewController,ObjC.ID,string[])">
