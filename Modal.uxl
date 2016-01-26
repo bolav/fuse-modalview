@@ -2,13 +2,13 @@
 <Extensions Backend="CPlusPlus" Condition="iOS">
        <Type Name="ModalJS">
                <Set FileExtension="mm" />
-               <Require Source.Include="uObjC.Reference.h" />
+               <Require Source.Include="uObjC.UnoObject.h" />
 
           <Method Signature="ShowImpl(iOS.UIKit.UIViewController,ObjC.ID,string[])">
                <Body>
                    <![CDATA[
                    // Need to save the variables we need in the callback
-                   Uno_StrongReference *objcCallback = [[Uno_StrongReference alloc] initWithUnoObject:$$];
+                   StrongUnoObject *objcCallback = [[StrongUnoObject alloc] initWithUnoObject:$$];
 
                    for (int i = 0; i < $2->Length(); i++)
                    {
