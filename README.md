@@ -13,6 +13,8 @@ Using [fusepm](https://github.com/bolav/fusepm)
     $ fusepm install https://github.com/bolav/fuse-modalview
 
 
+## Usage
+
 ```xml
 <ModalJS ux:Global="Modal" />
 ```
