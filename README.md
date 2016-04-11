@@ -6,6 +6,12 @@ Library to use modal in [Fuse](http://www.fusetools.com/).
 Modal dialogs are implemented using UIAlertController for iOS, and AlertDialogBuilder for Android. 
 There is also a hackish fallback using UX, replacing the whole UX tree with the dialog.
 
+## Installation
+
+Using [fusepm](https://github.com/bolav/fusepm)
+
+    $ fusepm install https://github.com/bolav/fuse-modalview
+
 
 ```xml
 <ModalJS ux:Global="Modal" />
