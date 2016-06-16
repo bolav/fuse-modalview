@@ -1,0 +1,19 @@
+<Panel ux:Class="DP" Name="p" Background="#000a">
+<DockPanel Margin="15,0,15,0" Padding="10" Background="#ffff">
+	<StackPanel Dock="Top">
+		<Text Value="$title" TextAlignment="Center" />
+		<Rectangle Margin="5">
+			<Stroke Width="1">
+				<StaticSolidColor Color="#BABABAFF" />
+			</Stroke>
+		</Rectangle>
+	</StackPanel>
+	<ScrollView>
+		<Text Value="$text" TextWrapping="Wrap" FontSize="20" TextAlignment="Center" TextColor="#171616ff" Margin="20" />
+	</ScrollView>
+	<Grid Dock="Bottom" ColumnCount="2" Margin="0">
+		<Button Text="$button1" />
+		<Button Text="$button2" />
+	</Grid>
+</DockPanel>
+</Panel>

@@ -1,4 +1,4 @@
-<App Theme="Basic">
+<App>
 	<ModalJS ux:Global="Modal" />
 	<JavaScript>
 		var Modal = require('Modal');
