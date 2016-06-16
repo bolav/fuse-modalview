@@ -1,30 +1,8 @@
 {
   "RootNamespace":"",
   "Packages": [
-        "Fuse.Animations",
-        "Fuse.BasicTheme",
-        "Fuse.Controls",
-        "Fuse.Designer",
-        "Fuse.Drawing",
-        "Fuse.Drawing.Primitives",
-        "Fuse.Effects",
-        "Fuse.Elements",
-        "Fuse.Entities",
-        "Fuse.Gestures",
-        "Fuse.Navigation",
-        "Fuse.Shapes",
-        "Fuse.Triggers",
-        "Fuse.Reactive",
-        "Fuse.Scripting",
-        "Fuse.Android",
-        "Fuse.Desktop",
-        "Fuse.iOS",
-        "FuseCore",
-        "Uno.Collections",
-        "Uno.Geometry",
-        "Experimental.iOS",
-        "ObjC",
-        "Android"
+    "Fuse",
+    "FuseJS"
   ],
   "Includes": [
     "*.uno",

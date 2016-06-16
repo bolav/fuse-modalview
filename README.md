@@ -1,4 +1,4 @@
-Modal for Fuse
+Modal for Fuse [![Build Status](https://travis-ci.org/bolav/fuse-modalview.svg?branch=master)](https://travis-ci.org/bolav/fuse-modalview)
 ==============
 
 Library to use modal in [Fuse](http://www.fusetools.com/).
