@@ -3,7 +3,8 @@
   "Packages": [
     "Fuse",
     "FuseJS",
-    "Android"
+    "Android",
+    "Experimental.iOS"
   ],
   "Includes": [
     "*.uno",
