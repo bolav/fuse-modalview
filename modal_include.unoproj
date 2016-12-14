@@ -2,9 +2,7 @@
   "RootNamespace":"",
   "Packages": [
     "Fuse",
-    "FuseJS",
-    "Android",
-    "Experimental.iOS"
+    "FuseJS"
   ],
   "Includes": [
     "*.uno",

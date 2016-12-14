@@ -5,9 +5,11 @@ using Fuse.Reactive;
 using Fuse.Scripting;
 using Fuse.Controls;
 using Uno.Compiler.ExportTargetInterop;
-using Android.android.app;
 
 [TargetSpecificImplementation]
+[ForeignInclude(Language.Java,
+	"android.app.AlertDialog",
+	"android.content.DialogInterface")]
 public class ModalJS : NativeModule
 {
 	public ModalJS () {
@@ -16,7 +18,7 @@ public class ModalJS : NativeModule
 
 	Panel myPanel;
 	Panel parent;
-	Panel UXModal(string title, string text, Fuse.Scripting.Array buttons) {
+	Panel UXModal(string title, string text, string[] buttons) {
 		var p = new Fuse.Controls.Panel();
 
         var temp = new Fuse.Controls.DockPanel();
@@ -59,7 +61,7 @@ public class ModalJS : NativeModule
 		for (var i = 0; i < buttons.Length; i++) {
 			var tempButton = new Fuse.Controls.Button();
 			temp8.Children.Add(tempButton);
-			tempButton.Text = buttons[i] as string;
+			tempButton.Text = buttons[i];
 			Fuse.Gestures.Clicked.AddHandler(tempButton, ButtonClickHandler);
 		}
 
@@ -107,99 +109,107 @@ public class ModalJS : NativeModule
 
 	}
 
-	extern(iOS)
-	void iOSClickHandler (int id) {
+	extern(mobile)
+	void ClickHandler (int id) {
 		running = false;
-		var s = buttons[id] as string;
-		Context.Dispatcher.Invoke(new InvokeEnclosure(callback, s).InvokeCallback);
-	}
-
-	extern(Android)
-	void AndroidClickHandler (string s) {
-		running = false;
+		var s = buttons[id];
 		Context.Dispatcher.Invoke(new InvokeEnclosure(callback, s).InvokeCallback);
 	}
 
 	Context Context;
 	Fuse.Scripting.Function callback;
 	bool running = false;
-	Fuse.Scripting.Array buttons;
+	string[] buttons;
 	string title;
 	string body;
 
-	[TargetSpecificImplementation]
+	[Foreign(Language.ObjC)]
 	extern(iOS)
-	public void ShowImpl(iOS.UIKit.UIViewController controller, ObjC.ID alert, string[] buttons);
+	public void ShowImpl(string t1, string b1, string[] b2, int len) 
+	@{
+		UIAlertController* alert = [UIAlertController alertControllerWithTitle:t1
+                               message:b1
+                               preferredStyle:UIAlertControllerStyleAlert];
+ 
 
-	extern(iOS)
-	public void ShowModaliOS() {
-		if (title == "HACKETIHACK") {
-			iOSClickHandler(-1);
+		for (int i = 0; i < [b2 count]; i++)
+		{
+			UIAlertAction* aa = [UIAlertAction
+								actionWithTitle:b2[i]
+								style:UIAlertActionStyleDefault
+								handler:^(UIAlertAction * action)
+									{
+										// Need a pool, since we are running on a different thread
+										uAutoReleasePool pool;
+										@{ModalJS:Of(_this).ClickHandler(int):Call(i)};
+										[alert dismissViewControllerAnimated:YES completion:nil];
+								}];
+
+			[alert addAction:aa];
 		}
-		var alert = iOS.UIKit.UIAlertController._alertControllerWithTitleMessagePreferredStyle(
-			title,
-			body,
-			iOS.UIKit.UIAlertControllerStyle.UIAlertControllerStyleAlert
-		);
+		[[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alert animated:NO completion:nil];           
 
-		var s_buttons = new string[buttons.Length];
-		for (var i = 0; i < buttons.Length; i++) {
-			s_buttons[i] = buttons[i] as string;
-		}
+	@}
 
-		// var alert_uivc = new iOS.UIKit.UIAlertController(alert);
-		//var action = new iOS.UIKit.UIAlertAction();
-		// action.Title = "OK";
-
-		var uivc = iOS.UIKit.UIApplication._sharedApplication().KeyWindow.RootViewController;
-		ShowImpl(uivc, alert, s_buttons);
-		// uivc.presentModalViewControllerAnimated(alert_uivc, false);
+	extern(mobile)
+	public void ShowModal() {
+		ShowImpl(title, body, buttons, buttons.Length);
 	}
 
-	extern(Android)
-	public void ShowModalAndroid() {
+	[Foreign(Language.Java)]
+	extern(android)
+	public void ShowImpl(string t1, string b1, string[] b2, int len) 
+	@{
+		AlertDialog.Builder builder = new AlertDialog.Builder(com.fuse.Activity.getRootActivity());
 		// Might want to throw error if more than 3 buttons
-		var ctx = Android.android.app.Activity.GetAppActivity();
-		var alert = new AlertDialogDLRBuilder(ctx);
-		Android.java.lang.String a_title = title;
-		alert.setTitle(a_title);
-		alert.setCancelable(false);
-		Android.java.lang.String a_body = body;
-		alert.setMessage(a_body);
-
-		for (var i = 0; i < buttons.Length; i++) {
-			var s = buttons[i] as string;
-			Android.java.lang.String a_but = s;
-			var clickhandler = new AndroidListener(s, AndroidClickHandler);
+		builder.setTitle(t1)
+		       .setCancelable(false)
+		       .setMessage(b1);
+		for (int i = 0; i < len; i++) {
+			final int ii = i; // Needs this to be final for inner class
 			if (i == 0) {
-				alert.setNegativeButton(a_but, clickhandler);
+				builder.setNegativeButton(b2.get(i), new DialogInterface.OnClickListener() {
+           			public void onClick(DialogInterface dialog, int id) {
+	           			@{ModalJS:Of(_this).ClickHandler(int):Call(ii)};
+           			}
+       			});
 			}
-			else if ((i == 1)&&(buttons.Length>2)) {
-				alert.setNeutralButton(a_but, clickhandler);
+			else if ((i == 1)&&(len>2)) {
+				builder.setNeutralButton(b2.get(i), new DialogInterface.OnClickListener() {
+           			public void onClick(DialogInterface dialog, int id) {
+	           			@{ModalJS:Of(_this).ClickHandler(int):Call(ii)};
+           			}
+       			});
 			}
 			else {
-				alert.setPositiveButton(a_but, clickhandler);
+				builder.setPositiveButton(b2.get(i), new DialogInterface.OnClickListener() {
+           			public void onClick(DialogInterface dialog, int id) {
+	           			@{ModalJS:Of(_this).ClickHandler(int):Call(ii)};
+           			}
+       			});
 			}
 		}
+		AlertDialog alert = builder.create();
 		alert.show();
-	}
+	@}
 
 	object ShowModal (Context c, object[] args) {
 		if (running) return null;
 		running = true;
 		title = args[0] as string;
 		body = args[1] as string;
-		buttons = args[2] as Fuse.Scripting.Array;
+		var b_a = args[2] as Fuse.Scripting.Array;
+		buttons = new string[b_a.Length];
+		for (var i = 0; i < b_a.Length; i++) {
+			buttons[i] = b_a[i].ToString();
+		}
+
 		callback = args[3] as Fuse.Scripting.Function;
 		Context = c;
 
 		Uno.Diagnostics.Debug.Alert(body);
-		if defined(iOS) {
-			UpdateManager.PostAction(ShowModaliOS);
-			return null;
-		}
-		else if defined(Android) {
-			UpdateManager.PostAction(ShowModalAndroid);
+		if defined(mobile) {
+			UpdateManager.PostAction(ShowModal);
 			return null;
 		}
 		else {
