@@ -7,7 +7,7 @@ using Fuse.Controls;
 using Uno.Compiler.ExportTargetInterop;
 
 [TargetSpecificImplementation]
-[ForeignInclude(Language.Java,
+[extern(android) ForeignInclude(Language.Java,
 	"android.app.AlertDialog",
 	"android.content.DialogInterface")]
 public class ModalJS : NativeModule
