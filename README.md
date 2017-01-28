@@ -15,10 +15,6 @@ Using [fusepm](https://github.com/bolav/fusepm)
 
 ## Usage
 
-```xml
-<ModalJS ux:Global="Modal" />
-```
-
 ```javascript
 		var Modal = require('Modal');
 		function click () {

@@ -1,5 +1,4 @@
 <App>
-	<ModalJS ux:Global="Modal" />
 	<JavaScript>
 		var Modal = require('Modal');
 		function click () {
