@@ -27,3 +27,11 @@ Using [fusepm](https://github.com/bolav/fusepm)
 				});
 		}
 ```
+
+## Layout Control
+
+Use the following commands for text layout
+
+	\n  for a new line
+
+(Feel free to make a Pull Request if can add other commands)
