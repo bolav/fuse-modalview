@@ -230,8 +230,8 @@ namespace Bolav.Modal {
 			if defined(CIL) {
 				if (n is Fuse.Desktop.DesktopRootViewport) {
 					var a = n as Fuse.Desktop.DesktopRootViewport;
-					var c = a.Children[1];
-					debug_log a.Children.Count;
+					debug_log "Num Children: " + a.Children.Count;
+					var c = a.Children[a.Children.count-1];
 					return FindPanel(c);
 				}
 			}
