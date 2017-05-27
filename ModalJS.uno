@@ -17,7 +17,7 @@ namespace Bolav.Modal {
 		static readonly ModalJS _instance;
 		public ModalJS () {
 			if(_instance != null) return;
-			Resource.SetGlobalKey(_instance = this, "Modal");
+			Uno.UX.Resource.SetGlobalKey(_instance = this, "Modal");
 
 			AddMember(new NativeFunction("showModal", (NativeCallback)ShowModal));
 		}
