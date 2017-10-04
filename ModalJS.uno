@@ -217,29 +217,12 @@ namespace Bolav.Modal {
 				return null;
 			}
 			else {
-				parent = FindPanel(AppBase.Current.RootViewport);
+				parent = AppBase.Current.RootViewport.FirstChild<Panel>();
 				myPanel = UXModal(title, body, buttons);
 				UpdateManager.PostAction(AddModalUX);
 				return null;
 			}
 
-		}
-
-		Panel FindPanel (Node n) {
-			debug_log "FindPanel " + n;
-			if defined(CIL) {
-				if (n is Fuse.Desktop.DesktopRootViewport) {
-					var a = n as Fuse.Desktop.DesktopRootViewport;
-					debug_log "Num Children: " + a.Children.Count;
-					var c = a.Children[a.Children.Count-1];
-					return FindPanel(c);
-				}
-			}
-			if (n is Fuse.Controls.Panel) {
-				var p = n as Fuse.Controls.Panel;
-				return p;
-			}
-			return null;
 		}
 	}
 }
